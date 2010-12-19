@@ -30,3 +30,18 @@ Then you'll just echo the gmap-class in your action... For example:
           $this->template->map = new Gmap();
        } // function
     } // class
+
+If you want to display some markers, just take a closer look at the following example.
+
+    public function action_index()
+    {
+       $map = new Gmap();
+       $map->add_marker('Marker A', 51.15, 6.83)
+          ->add_marker('Marker B', 51.15, 6.93, array( // Marker with Content and custom icon.
+             'content' => '<p>Put HTML here. "Quotes" and \'singlequotes\'</p>',
+             'icon' => Kohana::find_file('assets/images', 'red_pin', 'png')));
+       
+       $this->template->map = $map;
+    }
+
+Yes, it's that easy ;)
