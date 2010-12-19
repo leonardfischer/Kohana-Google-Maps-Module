@@ -5,11 +5,18 @@ The gallery will make use of the following modules:
 
 * None
 
+## Features
+
+* Display a Google-Map by just echo'ing an instance of the "Gmap" class
+* Setting several map-types (road, satellite, hybrid and terrain)
+* Setting sensor-parameter for mobile devices
+* Adding new markers to the map
+
 ## Features to come
 The following features shall be implemented during development:
 
-* Addind your own points to the map
 * Adding your own control-elements to the map
+* Cleaning up the gmap-view
 
 ## Usage
 The usage of this module is as easy as it could be! Simply activate the module in your bootstrap.php
@@ -19,7 +26,7 @@ The usage of this module is as easy as it could be! Simply activate the module i
        'gmap'       => MODPATH.'gmap',       // A simple google-maps module
     ));
 
-Then you'll just echo the gmap-class in your action... For example:
+Then you'll just echo an instance of the gmap class in your action... For example:
 
     <?php defined('SYSPATH') or die('No direct script access.');
     
