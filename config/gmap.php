@@ -5,5 +5,6 @@ return array (
 	'default_lng' => 6.8328,
 	'default_zoom' => 12,
 	'default_sensor' => false, // Used for mobile devices.
-	'default_maptype' => 'road', // Used as standard map-type.
+	'default_maptype' => 'road',
+	'default_view' => 'gmap',
 );

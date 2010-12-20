@@ -23,7 +23,7 @@ class Kohana_Gmap
 	 * 
 	 * @return string
 	 */
-	public function __tostring()
+	public function __toString()
 	{
 		return $this->render();
 	} // function
@@ -91,15 +91,13 @@ class Kohana_Gmap
 			$this->_options['view'] = $this->_config->default_view;
 		} // if
 		
-		var_dump($this->_options['view']); die();
-		
 		$this->template = View::factory($this->_options['view']);
 		
 		$this->template
 			->bind('options', $this->_options)
 			->bind('marker', $this->marker);
 		
-		return (String) $this->template;
+		return $this->template->render();
 	} // function
 	
 	/**
