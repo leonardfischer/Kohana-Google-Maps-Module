@@ -151,6 +151,19 @@ class Kohana_Gmap
 	} // function
 	
 	/**
+	 * Set the template for displaying the Google-map.
+	 * 
+	 * @param string $template
+	 * @return Gmap
+	 */
+	public function set_template($template)
+	{
+		$this->template = View::factory($template);
+		
+		return $this;
+	} // function
+	
+	/**
 	 * Validate, if the latitude is in bounds.
 	 * 
 	 * @param float $lat
