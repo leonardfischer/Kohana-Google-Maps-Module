@@ -16,7 +16,6 @@ class Kohana_Gmap
 	public function __construct()
 	{
 		$this->_config = Kohana::config('gmap');
-		$this->template = View::factory('gmap');
 	} // function
 	
 	/**
@@ -69,23 +68,30 @@ class Kohana_Gmap
 		
 		if (! isset($this->_options['zoom']))
 		{
-			$this->_options['zoom'] = $this->_config->zoom;
+			$this->_options['zoom'] = $this->_config->default_zoom;
 		} // if
 		
 		if (! isset($this->_options['sensor']))
 		{
-			$this->_options['sensor'] = $this->_config->sensor;
+			$this->_options['sensor'] = $this->_config->default_sensor;
 		} // if
 		
 		if (! isset($this->_options['lat']))
 		{
-			$this->_options['lat'] = $this->_config->lat;
+			$this->_options['lat'] = $this->_config->default_lat;
 		} // if
 		
 		if (! isset($this->_options['lng']))
 		{
-			$this->_options['lng'] = $this->_config->lng;
+			$this->_options['lng'] = $this->_config->default_lng;
 		} // if
+		
+		if (! isset($this->_options['view']))
+		{
+			$this->_options['view'] = $this->_config->default_view;
+		} // if
+		
+		$this->template = View::factory($this->_options['view']);
 		
 		$this->template
 			->bind('options', $this->_options)
@@ -158,7 +164,7 @@ class Kohana_Gmap
 	 */
 	public function set_template($template)
 	{
-		$this->template = View::factory($template);
+		$this->_options['view'] = $template;
 		
 		return $this;
 	} // function
