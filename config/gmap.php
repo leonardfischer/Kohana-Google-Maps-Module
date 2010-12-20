@@ -16,6 +16,6 @@ return array (
 
 	// View
 	'default_view' => 'gmap',
-	'gmap_size_x' => '100%',
-	'gmap_size_y' => '100%',
+	'default_gmap_size_x' => '100%',
+	'default_gmap_size_y' => '100%',
 );

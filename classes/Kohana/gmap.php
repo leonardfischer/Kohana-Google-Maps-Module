@@ -10,6 +10,8 @@ class Kohana_Gmap
 		'sensor' => FALSE,
 		'maptype' => NULL,
 		'view' => NULL,
+		'gmap_size_x' => NULL,
+		'gmap_size_y' => NULL,
 	);
 	protected $marker = array();
 	protected $template = NULL;
@@ -20,6 +22,11 @@ class Kohana_Gmap
 		'terrain'   => 'google.maps.MapTypeId.TERRAIN',
 	);
 	
+	/**
+	 * Constructor for the Google-Map class.
+	 * 
+	 * @param array $options
+	 */
 	public function __construct(array $options = array())
 	{
 		$this->_config = Kohana::config('gmap');
@@ -28,6 +35,7 @@ class Kohana_Gmap
 		$this->set_maptype($this->_options['maptype']);
 		$this->set_pos($this->_options['lat'], $this->_options['lng']);
 		$this->set_sensor($this->_options['sensor']);
+		$this->set_gmap_size($this->_options['gmap_size_x'], $this->_options['gmap_size_y']);
 	} // function
 	
 	/**
@@ -96,6 +104,16 @@ class Kohana_Gmap
 		if (! isset($this->_options['lng']))
 		{
 			$this->_options['lng'] = $this->_config->default_lng;
+		} // if
+		
+		if (! isset($this->_options['gmap_size_x']))
+		{
+			$this->_options['gmap_size_x'] = $this->_config->default_gmap_size_x;
+		} // if
+		
+		if (! isset($this->_options['gmap_size_y']))
+		{
+			$this->_options['gmap_size_y'] = $this->_config->default_gmap_size_y;
 		} // if
 		
 		if (! empty($view))
@@ -168,6 +186,40 @@ class Kohana_Gmap
 		} // if
 		
 		$this->_options['sensor'] = $sensor;
+		
+		return $this;
+	} // function
+
+	/**
+	 * Set a size for the rendered Google-Map.
+	 * You may set a CSS attribute like for example "500px", "50%" or "10em".
+	 * If you just set an integer, "px" will be used.
+	 * 
+	 * @param mixed $x May be a CSS attribute ("500px", "50%", "10em") or an int
+	 * @param mixed $y May be a CSS attribute ("500px", "50%", "10em") or an int
+	 * @return Gmap
+	 */
+	public function set_gmap_size($x = NULL, $y = NULL)
+	{
+		if (is_numeric($x))
+		{
+			$x = $x . 'px';
+		} // if
+		
+		if (is_numeric($y))
+		{
+			$y = $y . 'px';
+		} // if
+		
+		if ($x != NULL)
+		{
+			$this->_options['gmap_size_x'] = $x;
+		} // if
+		
+		if ($y != NULL)
+		{
+			$this->_options['gmap_size_y'] = $y;
+		} // if
 		
 		return $this;
 	} // function
