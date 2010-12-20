@@ -32,7 +32,6 @@ class Kohana_Gmap
 		$this->_config = Kohana::config('gmap');
 		$this->_options = Arr::extract(Arr::merge($this->_options, $options), array_keys($this->_options));
 		
-		$this->set_maptype($this->_options['maptype']);
 		$this->set_pos($this->_options['lat'], $this->_options['lng']);
 		$this->set_sensor($this->_options['sensor']);
 		$this->set_gmap_size($this->_options['gmap_size_x'], $this->_options['gmap_size_y']);
@@ -83,7 +82,7 @@ class Kohana_Gmap
 		// Set a default map-type.
 		if (! isset($this->_options['maptype']))
 		{
-			$this->_options['maptype'] = Gmap::$maptypes['road'];
+			$this->_options['maptype'] = Gmap::$maptypes[$this->_config->default_maptype];
 		} // if
 		
 		if (! isset($this->_options['zoom']))
