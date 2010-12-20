@@ -3,7 +3,14 @@
 class Kohana_Gmap
 {
 	protected $_config = NULL;
-	protected $_options = array();
+	protected $_options = array(
+		'lat' => NULL,
+		'lng' => NULL,
+		'zoom' => NULL,
+		'sensor' => FALSE,
+		'maptype' => NULL,
+		'view' => NULL,
+	);
 	protected $marker = array();
 	protected $template = NULL;
 	protected static $maptypes = array(
@@ -13,9 +20,14 @@ class Kohana_Gmap
 		'terrain'   => 'google.maps.MapTypeId.TERRAIN',
 	);
 	
-	public function __construct()
+	public function __construct(array $options = array())
 	{
 		$this->_config = Kohana::config('gmap');
+		$this->_options = Arr::extract(Arr::merge($this->_options, $options), array_keys($this->_options));
+		
+		$this->set_maptype($this->_options['maptype']);
+		$this->set_pos($this->_options['lat'], $this->_options['lng']);
+		$this->set_sensor($this->_options['sensor']);
 	} // function
 	
 	/**
@@ -58,7 +70,7 @@ class Kohana_Gmap
 	 * 
 	 * @return string
 	 */
-	public function render()
+	public function render($view = '')
 	{
 		// Set a default map-type.
 		if (! isset($this->_options['maptype']))
@@ -86,7 +98,11 @@ class Kohana_Gmap
 			$this->_options['lng'] = $this->_config->default_lng;
 		} // if
 		
-		if (! isset($this->_options['view']))
+		if (! empty($view))
+		{
+			$this->_options['view'] = $view;
+		}		
+		elseif (! isset($this->_options['view']))
 		{
 			$this->_options['view'] = $this->_config->default_view;
 		} // if
