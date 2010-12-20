@@ -1,7 +1,7 @@
 # Kohana-Google Maps Module
 With this module you can easily add a "google map" to your Kohana installation
 
-The gallery will make use of the following modules:
+The Google Map Module will make use of the following modules:
 
 * None
 
