@@ -1,6 +1,8 @@
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=<?php echo ($options['sensor']) ? 'true' : 'false'; ?>"></script>
 <script type="text/javascript">
-function initialize() {
+var gmaps_mod = gmaps_mod || {};
+
+gmaps_mod.initialize = function() {
 	var map = new google.maps.Map(document.getElementById("map_canvas"), {
 			zoom: <?php echo $options['zoom']; ?>,
 			center: new google.maps.LatLng(<?php echo str_replace(',', '.', $options['lat']); ?>, <?php echo str_replace(',', '.', $options['lng']); ?>),
@@ -27,10 +29,11 @@ function initialize() {
 			<?php endif; ?>
 		<?php endforeach; ?>
 	<?php endif; ?>
-}
+};
+
 
 window.onload = (function(){
-	initialize();
+	gmaps_mod.initialize();
 });
 </script>
 
