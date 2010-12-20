@@ -91,6 +91,8 @@ class Kohana_Gmap
 			$this->_options['view'] = $this->_config->default_view;
 		} // if
 		
+		var_dump($this->_options['view']); die();
+		
 		$this->template = View::factory($this->_options['view']);
 		
 		$this->template
