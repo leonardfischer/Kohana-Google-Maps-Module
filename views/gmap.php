@@ -14,7 +14,7 @@ gmaps_mod.initialize = function() {
 			var marker_<?php echo $mark['id']; ?> = new google.maps.Marker({
 					position: new google.maps.LatLng(<?php echo str_replace(',', '.', $mark['lat']); ?>, <?php echo str_replace(',', '.', $mark['lng']); ?>),
 					map: map,
-					title: "<?php echo $mark['title']; ?>",
+					title: "<?php echo $mark['options']['title']; ?>",
 					<?php echo (isset($mark['options']['icon'])) ? 'icon: "'.$mark['options']['icon'].'",' : ''; ?>
 				});
 			

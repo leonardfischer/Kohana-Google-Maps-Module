@@ -61,12 +61,22 @@ class Kohana_Gmap
 		Gmap::validate_latitude($lat);
 		Gmap::validate_longitude($lng);
 		
+		$available_options = array(
+			'title',
+			'content',
+			'icon',
+		);
+		
+		if (! isset($options['title']) OR empty($options['title']))
+		{
+			$options['title'] = $id;
+		} // if
+		
 		$this->marker[$id] = array(
-			'title' => (isset($options['title'])) ? $options['title'] : $id,
 			'id' => URL::title($id, '_'),
 			'lat' => $lat,
 			'lng' => $lng,
-			'options' => $options,
+			'options' => Arr::extract($options, $available_options),
 		);
 		
 		return $this;
