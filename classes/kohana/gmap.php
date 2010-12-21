@@ -12,6 +12,7 @@ class Kohana_Gmap
 		'view' => NULL,
 		'gmap_size_x' => NULL,
 		'gmap_size_y' => NULL,
+		'gmap_controls' => array(),
 	);
 	protected $marker = array();
 	protected $template = NULL;
@@ -234,14 +235,14 @@ class Kohana_Gmap
 	} // function
 	
 	/**
-	 * Set the template for displaying the Google-map.
+	 * Set the view for displaying the Google-map.
 	 * 
-	 * @param string $template
+	 * @param string $view
 	 * @return Gmap
 	 */
-	public function set_template($template)
+	public function set_view($view)
 	{
-		$this->_options['view'] = $template;
+		$this->_options['view'] = $view;
 		
 		return $this;
 	} // function
