@@ -10,8 +10,8 @@ gmaps_mod.initialize = function() {
 		});
 
 	<?php if (isset($marker)): ?>
-		<?php foreach ($marker as $name => $mark): ?>
-			var marker_<?php echo $mark['js_name']; ?> = new google.maps.Marker({
+		<?php foreach ($marker as $mark): ?>
+			var marker_<?php echo $mark['id']; ?> = new google.maps.Marker({
 					position: new google.maps.LatLng(<?php echo str_replace(',', '.', $mark['lat']); ?>, <?php echo str_replace(',', '.', $mark['lng']); ?>),
 					map: map,
 					title: "<?php echo $mark['title']; ?>",
@@ -19,12 +19,12 @@ gmaps_mod.initialize = function() {
 				});
 			
 			<?php if (isset($mark['options']['content'])): ?>
-			var infowin_<?php echo $mark['js_name']; ?> = new google.maps.InfoWindow({
+			var infowin_<?php echo $mark['id']; ?> = new google.maps.InfoWindow({
 					content: "<?php echo addslashes($mark['options']['content']); ?>"
 				});	
 
-			google.maps.event.addListener(marker_<?php echo $mark['js_name']; ?>, 'click', function() {
-					infowin_<?php echo $mark['js_name']; ?>.open(map, marker_<?php echo $mark['js_name']; ?>);
+			google.maps.event.addListener(marker_<?php echo $mark['id']; ?>, 'click', function() {
+					infowin_<?php echo $mark['id']; ?>.open(map, marker_<?php echo $mark['id']; ?>);
 				});
 			<?php endif; ?>
 		<?php endforeach; ?>

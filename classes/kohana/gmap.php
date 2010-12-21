@@ -50,20 +50,20 @@ class Kohana_Gmap
 	/**
 	 * Set a marker somewhere on the map.
 	 * 
-	 * @param string $name
+	 * @param string $id
 	 * @param float  $lat
 	 * @param float  $lng
 	 * @param array  $options
 	 * @return Gmap
 	 */
-	public function add_marker($name, $lat, $lng, array $options = array())
+	public function add_marker($id, $lat, $lng, array $options = array())
 	{
 		Gmap::validate_latitude($lat);
 		Gmap::validate_longitude($lng);
 		
-		$this->marker[$name] = array(
-			'title' => $name,
-			'js_name' => URL::title($name, '_'),
+		$this->marker[$id] = array(
+			'title' => (isset($options['title'])) ? $options['title'] : $id,
+			'id' => URL::title($id, '_'),
 			'lat' => $lat,
 			'lng' => $lng,
 			'options' => $options,
