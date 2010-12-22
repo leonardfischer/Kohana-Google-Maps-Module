@@ -9,7 +9,7 @@ return array (
 	'default_zoom' => 12,
 
 	 // Default "sensor" setting - Used for mobile devices.
-	'default_sensor' => false,
+	'default_sensor' => FALSE,
 
 	// Default map-type.
 	'default_maptype' => 'road',
@@ -23,11 +23,14 @@ return array (
 	'default_gmap_controls' => array(
 		'maptype' => array(
 			'control-type' => 'default',
-			'position' => FALSE,
+			'position' => NULL,
 		),
 		'navigation' => array(
 			'control-type' => 'default',
-			'position' => FALSE,
+			'position' => NULL,
+		),
+		'scale' => array(
+			'position' => NULL,
 		),
 	),
 );
