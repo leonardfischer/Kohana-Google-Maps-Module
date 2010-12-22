@@ -18,4 +18,16 @@ return array (
 	'default_view' => 'gmap',
 	'default_gmap_size_x' => '100%',
 	'default_gmap_size_y' => '100%',
+
+	// Google Maps controls
+	'default_gmap_controls' => array(
+		'maptype' => array(
+			'control-type' => 'default',
+			'position' => FALSE,
+		),
+		'navigation' => array(
+			'control-type' => 'default',
+			'position' => FALSE,
+		),
+	),
 );
