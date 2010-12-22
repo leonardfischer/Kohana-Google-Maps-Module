@@ -337,24 +337,14 @@ class Kohana_Gmap
 	 */
 	public function set_gmap_size($x = NULL, $y = NULL)
 	{
-		if (is_numeric($x))
-		{
-			$x = $x . 'px';
-		} // if
-		
-		if (is_numeric($y))
-		{
-			$y = $y . 'px';
-		} // if
-		
 		if ($x != NULL)
 		{
-			$this->_options['gmap_size_x'] = $x;
+			$this->_options['gmap_size_x'] = (is_numeric($x)) ? $x . 'px' : $x;
 		} // if
 		
 		if ($y != NULL)
 		{
-			$this->_options['gmap_size_y'] = $y;
+			$this->_options['gmap_size_y'] = (is_numeric($y)) ? $y . 'px' : $y;
 		} // if
 		
 		return $this;
