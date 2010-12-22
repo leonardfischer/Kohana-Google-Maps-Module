@@ -12,7 +12,11 @@ class Kohana_Gmap
 		'view' => NULL,
 		'gmap_size_x' => NULL,
 		'gmap_size_y' => NULL,
-		'gmap_controls' => array(),
+		'gmap_controls' => array(
+			'maptype' => NULL,
+			'navigation' => NULL,
+			'scale' => NULL,
+		),
 	);
 	protected $marker = array();
 	protected $template = NULL;
@@ -21,6 +25,27 @@ class Kohana_Gmap
 		'satellite' => 'google.maps.MapTypeId.SATELLITE',
 		'hybrid'    => 'google.maps.MapTypeId.HYBRID',
 		'terrain'   => 'google.maps.MapTypeId.TERRAIN',
+	);
+	protected static $control_navigation = array(
+		'small' => 'google.maps.NavigationControlStyle.SMALL',
+		'zoom_pan' => 'google.maps.NavigationControlStyle.ZOOM_PAN',
+		'android' => 'google.maps.NavigationControlStyle.ANDROID',
+		'default' => 'google.maps.NavigationControlStyle.DEFAULT',
+	);
+	protected static $control_maptypes = array(
+		'horizontal_bar' => 'google.maps.MapTypeControlStyle.HORIZONTAL_BAR',
+		'dropdown_menu' => 'google.maps.MapTypeControlStyle.DROPDOWN_MENU',
+		'default' => 'google.maps.MapTypeControlStyle.DEFAULT',
+	);
+	protected static $control_positions = array(
+		'top' => 'google.maps.ControlPosition.TOP',
+		'top_left' => 'google.maps.ControlPosition.TOP_LEFT',
+		'top_right' => 'google.maps.ControlPosition.TOP_RIGHT',
+		'bottom' => 'google.maps.ControlPosition.BOTTOM',
+		'bottom_left' => 'google.maps.ControlPosition.BOTTOM_LEFT',
+		'bottom_righ' => 'google.maps.ControlPosition.BOTTOM_RIGHT',
+		'left' => 'google.maps.ControlPosition.LEFT',
+		'right' => 'google.maps.ControlPosition.RIGHT',
 	);
 	
 	/**
@@ -126,6 +151,48 @@ class Kohana_Gmap
 			$this->_options['gmap_size_y'] = $this->_config->default_gmap_size_y;
 		} // if
 		
+		if ($this->_options['gmap_controls']['maptype'] !== FALSE)
+		{
+			if (! isset($this->_options['gmap_controls']['maptype']['control-type']))
+			{
+				$this->_options['gmap_controls']['maptype']['control-type'] = Gmap::$control_maptypes[$this->_config->default_gmap_controls['maptype']['control-type']];
+			} // if
+			
+			if (! isset($this->_options['gmap_controls']['maptype']['position']))
+			{
+				$this->_options['gmap_controls']['maptype']['position'] = NULL;
+				if ($this->_config->default_gmap_controls['maptype']['position'] !== NULL)
+				{
+					$this->_options['gmap_controls']['maptype']['position'] = Gmap::$control_positions[$this->_config->default_gmap_controls['maptype']['position']];
+				} // if
+			} // if
+		} // If
+		
+		if ($this->_options['gmap_controls']['navigation'] !== FALSE)
+		{
+			if (! isset($this->_options['gmap_controls']['navigation']['control-type']))
+			{
+				$this->_options['gmap_controls']['navigation']['control-type'] = Gmap::$control_maptypes[$this->_config->default_gmap_controls['navigation']['control-type']];
+			} // if
+			
+			if (! isset($this->_options['gmap_controls']['navigation']['position']))
+			{
+				$this->_options['gmap_controls']['navigation']['position'] = NULL;
+				if ($this->_config->default_gmap_controls['navigation']['position'] !== NULL)
+				{
+					$this->_options['gmap_controls']['navigation']['position'] = Gmap::$control_positions[$this->_config->default_gmap_controls['navigation']['position']];
+				} // if
+			} // if
+		} // if
+		
+		if ($this->_options['gmap_controls']['scale'] !== FALSE)
+		{
+			if (! isset($this->_options['gmap_controls']['scale']))
+			{
+				$this->_options['gmap_controls']['scale'] = array('position' => Gmap::$control_positions[$this->_config->default_gmap_controls['scale']['position']]);
+			} // if
+		} // if
+		
 		if (! empty($view))
 		{
 			$this->_options['view'] = $view;
@@ -142,6 +209,155 @@ class Kohana_Gmap
 			->bind('marker', $this->marker);
 		
 		return $this->template->render();
+	} // function
+
+	/**
+	 * Set some controls for your gmap.
+	 * You can specify how to display the map-type and navigation control.
+	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
+	 * 
+	 * @param array $options Set the options for the gmap-controls here.
+	 * @return Gmap
+	 */
+	public function set_gmap_controls($options)
+	{
+		if (isset($options['maptype']))
+		{
+			$this->set_gmap_controls_maptype($options['maptype']);
+		} // if
+		
+		if (isset($options['navigation']))
+		{
+			$this->set_gmap_controls_navigation($options['navigation']);
+		} // if
+		
+		if (isset($options['scale']))
+		{
+			$this->set_gmap_controls_scale($options['scale']);
+		} // if
+		
+		return $this;
+	} // function
+
+	/**
+	 * Set the maptype controls for your gmap.
+	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
+	 * 
+	 * @param mixed $options Set the options for the controls here.
+	 * @return Gmap
+	 */
+	public function set_gmap_controls_maptype($options)
+	{
+		if ($options === FALSE)
+		{
+			$this->_options['gmap_controls']['maptype'] = FALSE;
+		}
+		elseif (is_array($options))
+		{
+			if (isset($options['control-type']))
+			{
+				Gmap::validate_control_maptype($options['control-type']);
+				$this->_options['gmap_controls']['maptype']['control-type'] = Gmap::$control_maptypes[$options['control-type']];
+			} // if
+			
+			if (isset($options['position']))
+			{
+				Gmap::validate_control_position($options['position']);
+				$this->_options['gmap_controls']['maptype']['position'] = Gmap::$control_positions[$options['position']];
+			} // if
+		} // if
+		
+		return $this;
+	} // function
+
+	/**
+	 * Set the navigation controls for your gmap.
+	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
+	 * 
+	 * @param mixed $options Set the options for the controls here.
+	 * @return Gmap
+	 */
+	public function set_gmap_controls_navigation($options)
+	{
+		if ($options === FALSE)
+		{
+			$this->_options['gmap_controls']['navigation'] = FALSE;
+		}
+		elseif (is_array($options))
+		{
+			if (isset($options['control-type']))
+			{
+				Gmap::validate_control_navigation($options['control-type']);
+				$this->_options['gmap_controls']['navigation']['control-type'] = Gmap::$control_navigation[$options['control-type']];
+			} // if
+			
+			if (isset($options['position']))
+			{
+				Gmap::validate_control_position($options['position']);
+				$this->_options['gmap_controls']['navigation']['position'] = Gmap::$control_positions[$options['position']];
+			} // if
+		} // if
+		
+		return $this;
+	} // function
+
+	/**
+	 * Set the scale controls for your gmap.
+	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
+	 * 
+	 * @param mixed $options Set the options for the controls here.
+	 * @return Gmap
+	 */
+	public function set_gmap_controls_scale($options)
+	{
+		if ($options === FALSE)
+		{
+			$this->_options['gmap_controls']['scale'] = FALSE;
+		}
+		elseif (is_array($options))
+		{
+			if (isset($options['position']))
+			{
+				Gmap::validate_control_position($options['position']);
+				$this->_options['gmap_controls']['scale']['position'] = Gmap::$control_positions[$options['position']];
+			} // if
+		} // if
+		
+		return $this;
+	} // function
+
+	/**
+	 * Set a size for the rendered Google-Map.
+	 * You may set a CSS attribute like for example "500px", "50%" or "10em".
+	 * If you just set an integer, "px" will be used.
+	 * 
+	 * @param mixed $x May be a CSS attribute ("500px", "50%", "10em") or an int
+	 * @param mixed $y May be a CSS attribute ("500px", "50%", "10em") or an int
+	 * @return Gmap
+	 */
+	public function set_gmap_size($x = NULL, $y = NULL)
+	{
+		if (is_numeric($x))
+		{
+			$x = $x . 'px';
+		} // if
+		
+		if (is_numeric($y))
+		{
+			$y = $y . 'px';
+		} // if
+		
+		if ($x != NULL)
+		{
+			$this->_options['gmap_size_x'] = $x;
+		} // if
+		
+		if ($y != NULL)
+		{
+			$this->_options['gmap_size_y'] = $y;
+		} // if
+		
+		return $this;
 	} // function
 	
 	/**
@@ -199,40 +415,6 @@ class Kohana_Gmap
 		
 		return $this;
 	} // function
-
-	/**
-	 * Set a size for the rendered Google-Map.
-	 * You may set a CSS attribute like for example "500px", "50%" or "10em".
-	 * If you just set an integer, "px" will be used.
-	 * 
-	 * @param mixed $x May be a CSS attribute ("500px", "50%", "10em") or an int
-	 * @param mixed $y May be a CSS attribute ("500px", "50%", "10em") or an int
-	 * @return Gmap
-	 */
-	public function set_gmap_size($x = NULL, $y = NULL)
-	{
-		if (is_numeric($x))
-		{
-			$x = $x . 'px';
-		} // if
-		
-		if (is_numeric($y))
-		{
-			$y = $y . 'px';
-		} // if
-		
-		if ($x != NULL)
-		{
-			$this->_options['gmap_size_x'] = $x;
-		} // if
-		
-		if ($y != NULL)
-		{
-			$this->_options['gmap_size_y'] = $y;
-		} // if
-		
-		return $this;
-	} // function
 	
 	/**
 	 * Set the view for displaying the Google-map.
@@ -248,6 +430,50 @@ class Kohana_Gmap
 	} // function
 	
 	/**
+	 * Validate, if the given maptype-control is valid.
+	 * 
+	 * @param float $lat
+	 * @return boolean
+	 */
+	protected static function validate_control_maptype($maptype)
+	{
+		if (! array_key_exists($maptype, Gmap::$control_maptypes))
+		{
+			throw new Kohana_Exception('Given Map-Type ":maptype" control is not valid.',
+				array(':maptype' => $maptype));
+		} // if
+	} // function
+	
+	/**
+	 * Validate, if the given maptype-control is valid.
+	 * 
+	 * @param float $lat
+	 * @return boolean
+	 */
+	protected static function validate_control_navigation($navigation)
+	{
+		if (! array_key_exists($navigation, Gmap::$control_navigation))
+		{
+			throw new Kohana_Exception('Given Navigation-control ":navigation" is not valid.',
+				array(':navigation' => $navigation));
+		} // if
+	} // function
+	
+	/**
+	 * Validate, if the given position is supported.
+	 * 
+	 * @param string $position
+	 */
+	protected static function validate_control_position($position)
+	{
+		if (! array_key_exists($position, Gmap::$control_positions))
+		{
+			throw new Kohana_Exception('":position" is no supported position.',
+				array(':position' => $position));
+		} // if
+	} // function
+	
+	/**
 	 * Validate, if the latitude is in bounds.
 	 * 
 	 * @param float $lat
@@ -257,11 +483,9 @@ class Kohana_Gmap
 	{
 		if ($lat > 180 OR $lat < -180)
 		{
-			throw new Kohana_Exception('Latitude has to lie between -180.0 and 180.0! Set to :lat',
+			throw new Kohana_Exception('Latitude has to lie between -180.0 and 180.0! Set to ":lat"',
 				array(':lat' => $lat));
 		} // if
-		
-		return TRUE;
 	} // function
 	
 	/**
@@ -274,11 +498,9 @@ class Kohana_Gmap
 	{
 		if ($lng > 90 OR $lng < -90)
 		{
-			throw new Kohana_Exception('Longitude has to lie between -90.0 and 90.0! Set to :lng',
+			throw new Kohana_Exception('Longitude has to lie between -90.0 and 90.0! Set to ":lng"',
 				array(':lng' => $lng));
 		} // if
-		
-		return TRUE;
 	} // function
 	
 	/**
@@ -293,7 +515,5 @@ class Kohana_Gmap
 			throw new Kohana_Exception('":maptype" is no supported map-type.',
 				array(':maptype' => $maptype));
 		} // if
-		
-		return TRUE;
 	} // function
 } // class
