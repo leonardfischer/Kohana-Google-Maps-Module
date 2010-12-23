@@ -24,14 +24,17 @@ return array (
 	// Google Maps controls
 	'default_gmap_controls' => array(
 		'maptype' => array(
+			'display' => TRUE,
 			'style' => 'default',
 			'position' => NULL,
 		),
 		'navigation' => array(
+			'display' => TRUE,
 			'style' => 'default',
 			'position' => NULL,
 		),
 		'scale' => array(
+			'display' => TRUE,
 			'position' => NULL,
 		),
 	),
