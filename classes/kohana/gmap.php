@@ -7,19 +7,19 @@ class Kohana_Gmap
 		'lat' => NULL,
 		'lng' => NULL,
 		'zoom' => NULL,
-		'sensor' => FALSE,
+		'sensor' => NULL,
 		'maptype' => NULL,
 		'view' => NULL,
 		'gmap_size_x' => NULL,
 		'gmap_size_y' => NULL,
 		'gmap_controls' => array(
-			'maptype' => NULL,
-			'navigation' => NULL,
-			'scale' => NULL,
+			'maptype' => array(),
+			'navigation' => array(),
+			'scale' => array(),
 		),
 	);
 	protected $marker = array();
-	protected $template = NULL;
+	protected $view = NULL;
 	protected static $maptypes = array(
 		'road'      => 'google.maps.MapTypeId.ROADMAP',
 		'satellite' => 'google.maps.MapTypeId.SATELLITE',
@@ -43,7 +43,7 @@ class Kohana_Gmap
 		'top_right' => 'google.maps.ControlPosition.TOP_RIGHT',
 		'bottom' => 'google.maps.ControlPosition.BOTTOM',
 		'bottom_left' => 'google.maps.ControlPosition.BOTTOM_LEFT',
-		'bottom_righ' => 'google.maps.ControlPosition.BOTTOM_RIGHT',
+		'bottom_right' => 'google.maps.ControlPosition.BOTTOM_RIGHT',
 		'left' => 'google.maps.ControlPosition.LEFT',
 		'right' => 'google.maps.ControlPosition.RIGHT',
 	);
@@ -59,7 +59,7 @@ class Kohana_Gmap
 		$this->_options = Arr::extract(Arr::merge($this->_options, $options), array_keys($this->_options));
 		
 		$this->set_pos($this->_options['lat'], $this->_options['lng']);
-		$this->set_sensor($this->_options['sensor']);
+		$this->set_sensor((isset($this->_options['sensor'])) ? $this->_options['sensor'] : $this->_config->default_sensor);
 		$this->set_gmap_size($this->_options['gmap_size_x'], $this->_options['gmap_size_y']);
 	} // function
 	
@@ -107,6 +107,110 @@ class Kohana_Gmap
 		
 		return $this;
 	} // function
+
+	/**
+	 * Get the controls for your gmap.
+	 * 
+	 * @return array
+	 */
+	public function get_gmap_controls_for_view()
+	{
+		return array(
+			'maptype' => $this->get_gmap_controls_maptype_for_view(),
+			'navigation' => $this->get_gmap_controls_navigation_for_view(),
+//			'scale' => $this->get_gmap_controls_scale_for_view(),
+		);
+	} // function
+
+	/**
+	 * Get the maptype controls for your gmap.
+	 * 
+	 * @return array
+	 */
+	public function get_gmap_controls_maptype_for_view()
+	{
+		$return = array();
+		
+		if ($this->_options['gmap_controls']['maptype'] === NULL)
+		{
+			if (is_array($this->_config->default_gmap_controls['maptype']))
+			{
+				if (isset($this->_config->default_gmap_controls['maptype']['style']))
+				{
+					$return['style'] = $this->_config->default_gmap_controls['maptype']['style'];
+				} // if
+				
+				if (isset($this->_config->default_gmap_controls['maptype']['position']))
+				{
+					$return['position'] = $this->_config->default_gmap_controls['maptype']['position'];
+				} // if
+			}
+			elseif (is_bool($this->_config->default_gmap_controls['maptype']))
+			{
+				$return = $this->_config->default_gmap_controls['maptype'];
+			} // if
+		}
+		else
+		{
+			$return = $this->_options['gmap_controls']['maptype'];
+		} // if
+		
+		$return = array(
+			'style' => (isset($this->_options['gmap_controls']['maptype']['style']))
+				? Gmap::$control_maptypes[$this->_options['gmap_controls']['maptype']['style']]
+				: NULL,
+			'position' => (isset($this->_options['gmap_controls']['maptype']['position']))
+				? Gmap::$control_positions[$this->_options['gmap_controls']['maptype']['position']]
+				: NULL,
+		);
+		
+		return $return;
+	} // function
+
+	/**
+	 * Get the navigation controls for your gmap.
+	 * 
+	 * @return array
+	 */
+	public function get_gmap_controls_navigation_for_view()
+	{
+		$return = array();
+		
+		if ($this->_options['gmap_controls']['navigation'] === NULL)
+		{
+			if (is_array($this->_config->default_gmap_controls['navigation']))
+			{
+				if (isset($this->_config->default_gmap_controls['navigation']['style']))
+				{
+					$return['style'] = $this->_config->default_gmap_controls['navigation']['style'];
+				} // if
+				
+				if (isset($this->_config->default_gmap_controls['navigation']['position']))
+				{
+					$return['position'] = $this->_config->default_gmap_controls['navigation']['position'];
+				} // if
+			}
+			elseif (is_bool($this->_config->default_gmap_controls['navigation']))
+			{
+				$return = $this->_config->default_gmap_controls['navigation'];
+			} // if
+		}
+		else
+		{
+			$return = $this->_options['gmap_controls']['navigation'];
+		} // if
+		
+		$return = array(
+			'style' => (isset($this->_options['gmap_controls']['navigation']['style']))
+				? Gmap::$control_navigation[$this->_options['gmap_controls']['navigation']['style']]
+				: NULL,
+			'position' => (isset($this->_options['gmap_controls']['navigation']['position']))
+				? Gmap::$control_positions[$this->_options['gmap_controls']['navigation']['position']]
+				: NULL,
+		);
+		
+		return $return;
+	} // function
 	
 	/**
 	 * Renders the google-map template.
@@ -115,100 +219,95 @@ class Kohana_Gmap
 	 */
 	public function render($view = '')
 	{
-		// Set a default map-type.
-		if (! isset($this->_options['maptype']))
+		$temp = array();
+		foreach ((Array) $this->_config as $key => $value)
+		{
+			$temp[str_replace('default_', '', $key)] = $value;
+		} // foreach
+		
+		$this->_options = Arr::merge($temp, $this->_options);
+		unset($temp);
+		
+		if ($this->_options['maptype'] === NULL)
 		{
 			$this->_options['maptype'] = Gmap::$maptypes[$this->_config->default_maptype];
 		} // if
 		
-		if (! isset($this->_options['zoom']))
-		{
-			$this->_options['zoom'] = $this->_config->default_zoom;
-		} // if
-		
-		if (! isset($this->_options['sensor']))
-		{
-			$this->_options['sensor'] = $this->_config->default_sensor;
-		} // if
-		
-		if (! isset($this->_options['lat']))
+		if ($this->_options['lat'] === NULL)
 		{
 			$this->_options['lat'] = $this->_config->default_lat;
 		} // if
 		
-		if (! isset($this->_options['lng']))
+		if ($this->_options['lng'] === NULL)
 		{
 			$this->_options['lng'] = $this->_config->default_lng;
 		} // if
 		
-		if (! isset($this->_options['gmap_size_x']))
+		if ($this->_options['gmap_size_x'] === NULL)
 		{
 			$this->_options['gmap_size_x'] = $this->_config->default_gmap_size_x;
 		} // if
 		
-		if (! isset($this->_options['gmap_size_y']))
+		if ($this->_options['gmap_size_y'] === NULL)
 		{
 			$this->_options['gmap_size_y'] = $this->_config->default_gmap_size_y;
 		} // if
 		
-		if ($this->_options['gmap_controls']['maptype'] !== FALSE)
-		{
-			if (! isset($this->_options['gmap_controls']['maptype']['control-type']))
-			{
-				$this->_options['gmap_controls']['maptype']['control-type'] = Gmap::$control_maptypes[$this->_config->default_gmap_controls['maptype']['control-type']];
-			} // if
-			
-			if (! isset($this->_options['gmap_controls']['maptype']['position']))
-			{
-				$this->_options['gmap_controls']['maptype']['position'] = NULL;
-				if ($this->_config->default_gmap_controls['maptype']['position'] !== NULL)
-				{
-					$this->_options['gmap_controls']['maptype']['position'] = Gmap::$control_positions[$this->_config->default_gmap_controls['maptype']['position']];
-				} // if
-			} // if
-		} // If
-		
-		if ($this->_options['gmap_controls']['navigation'] !== FALSE)
-		{
-			if (! isset($this->_options['gmap_controls']['navigation']['control-type']))
-			{
-				$this->_options['gmap_controls']['navigation']['control-type'] = Gmap::$control_maptypes[$this->_config->default_gmap_controls['navigation']['control-type']];
-			} // if
-			
-			if (! isset($this->_options['gmap_controls']['navigation']['position']))
-			{
-				$this->_options['gmap_controls']['navigation']['position'] = NULL;
-				if ($this->_config->default_gmap_controls['navigation']['position'] !== NULL)
-				{
-					$this->_options['gmap_controls']['navigation']['position'] = Gmap::$control_positions[$this->_config->default_gmap_controls['navigation']['position']];
-				} // if
-			} // if
-		} // if
-		
-		if ($this->_options['gmap_controls']['scale'] !== FALSE)
-		{
-			if (! isset($this->_options['gmap_controls']['scale']))
-			{
-				$this->_options['gmap_controls']['scale'] = array('position' => Gmap::$control_positions[$this->_config->default_gmap_controls['scale']['position']]);
-			} // if
-		} // if
+		$this->_options['gmap_controls'] = $this->get_gmap_controls_for_view();
+
+//		if ($this->_options['gmap_controls']['navigation'] === NULL)
+//		{
+//			if (is_array($this->_config->default_gmap_controls['navigation']))
+//			{
+//				if (isset($this->_config->default_gmap_controls['navigation']['style']))
+//				{
+//					$this->_options['gmap_controls']['navigation']['style'] = Gmap::$control_navigation[$this->_config->default_gmap_controls['navigation']['style']];
+//				} // if
+//				
+//				if (isset($this->_config->default_gmap_controls['navigation']['position']))
+//				{
+//					$this->_options['gmap_controls']['navigation']['position'] = Gmap::$control_navigation[$this->_config->default_gmap_controls['navigation']['position']];
+//				} // if
+//			}
+//			elseif (is_bool($this->_config->default_gmap_controls['navigation']))
+//			{
+//				$this->_options['gmap_controls']['navigation'] = $this->_config->default_gmap_controls['navigation'];
+//			} // if
+//		} // if
+//		
+//		if ($this->_options['gmap_controls']['scale'] === NULL)
+//		{
+//			if (is_array($this->_config->default_gmap_controls['scale']))
+//			{
+//				if ($this->_config->default_gmap_controls['scale']['position'] === NULL)
+//				{
+//					$this->_config->default_gmap_controls['scale'] = TRUE;
+//				}
+//				else
+//				{
+//					$this->_options['gmap_controls']['scale']['position'] = Gmap::$control_positions[$this->_config->default_gmap_controls['scale']['position']];
+//				} // if
+//			}
+//			elseif (is_bool($this->_config->default_gmap_controls['scale']))
+//			{
+//				$this->_options['gmap_controls']['scale'] = $this->_config->default_gmap_controls['scale'];
+//			} // if
+//		} // if
 		
 		if (! empty($view))
 		{
 			$this->_options['view'] = $view;
 		}		
-		elseif (! isset($this->_options['view']))
+		elseif ($this->_options['view'] === NULL)
 		{
 			$this->_options['view'] = $this->_config->default_view;
 		} // if
 		
-		$this->template = View::factory($this->_options['view']);
-		
-		$this->template
+		$this->view = View::factory($this->_options['view'])
 			->bind('options', $this->_options)
 			->bind('marker', $this->marker);
 		
-		return $this->template->render();
+		return $this->view->render();
 	} // function
 
 	/**
@@ -254,16 +353,16 @@ class Kohana_Gmap
 		}
 		elseif (is_array($options))
 		{
-			if (isset($options['control-type']))
+			if (isset($options['style']))
 			{
-				Gmap::validate_control_maptype($options['control-type']);
-				$this->_options['gmap_controls']['maptype']['control-type'] = Gmap::$control_maptypes[$options['control-type']];
+				Gmap::validate_control_maptype($options['style']);
+				$this->_options['gmap_controls']['maptype']['style'] = $options['style'];
 			} // if
 			
 			if (isset($options['position']))
 			{
 				Gmap::validate_control_position($options['position']);
-				$this->_options['gmap_controls']['maptype']['position'] = Gmap::$control_positions[$options['position']];
+				$this->_options['gmap_controls']['maptype']['position'] = $options['position'];
 			} // if
 		} // if
 		
@@ -285,16 +384,16 @@ class Kohana_Gmap
 		}
 		elseif (is_array($options))
 		{
-			if (isset($options['control-type']))
+			if (isset($options['style']))
 			{
-				Gmap::validate_control_navigation($options['control-type']);
-				$this->_options['gmap_controls']['navigation']['control-type'] = Gmap::$control_navigation[$options['control-type']];
+				Gmap::validate_control_navigation($options['style']);
+				$this->_options['gmap_controls']['navigation']['style'] = $options['style'];
 			} // if
 			
 			if (isset($options['position']))
 			{
 				Gmap::validate_control_position($options['position']);
-				$this->_options['gmap_controls']['navigation']['position'] = Gmap::$control_positions[$options['position']];
+				$this->_options['gmap_controls']['navigation']['position'] = $options['position'];
 			} // if
 		} // if
 		
@@ -319,7 +418,7 @@ class Kohana_Gmap
 			if (isset($options['position']))
 			{
 				Gmap::validate_control_position($options['position']);
-				$this->_options['gmap_controls']['scale']['position'] = Gmap::$control_positions[$options['position']];
+				$this->_options['gmap_controls']['scale']['position'] = $options['position'];
 			} // if
 		} // if
 		

@@ -1,5 +1,7 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
+// Don't delete or rename any keys unless you know what you're doing!
+
 return array (
 	// Default map-center.
 	'default_lat' => 51.1731,
@@ -22,11 +24,11 @@ return array (
 	// Google Maps controls
 	'default_gmap_controls' => array(
 		'maptype' => array(
-			'control-type' => 'default',
+			'style' => 'default',
 			'position' => NULL,
 		),
 		'navigation' => array(
-			'control-type' => 'default',
+			'style' => 'default',
 			'position' => NULL,
 		),
 		'scale' => array(
