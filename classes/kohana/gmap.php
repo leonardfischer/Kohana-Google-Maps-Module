@@ -4,19 +4,15 @@ class Kohana_Gmap
 {
 	protected $_config = NULL;
 	protected $_options = array(
-		'lat' => NULL,
-		'lng' => NULL,
-		'zoom' => NULL,
-		'sensor' => NULL,
-		'maptype' => NULL,
-		'view' => NULL,
-		'gmap_size_x' => NULL,
-		'gmap_size_y' => NULL,
-		'gmap_controls' => array(
-			'maptype' => array(),
-			'navigation' => array(),
-			'scale' => array(),
-		),
+		'lat',
+		'lng',
+		'zoom',
+		'sensor',
+		'maptype',
+		'view',
+		'gmap_size_x',
+		'gmap_size_y',
+		'gmap_controls',
 	);
 	protected $marker = array();
 	protected $view = NULL;
@@ -26,16 +22,16 @@ class Kohana_Gmap
 		'hybrid'    => 'google.maps.MapTypeId.HYBRID',
 		'terrain'   => 'google.maps.MapTypeId.TERRAIN',
 	);
+	protected static $control_maptypes = array(
+		'horizontal_bar' => 'google.maps.MapTypeControlStyle.HORIZONTAL_BAR',
+		'dropdown_menu' => 'google.maps.MapTypeControlStyle.DROPDOWN_MENU',
+		'default' => 'google.maps.MapTypeControlStyle.DEFAULT',
+	);
 	protected static $control_navigation = array(
 		'small' => 'google.maps.NavigationControlStyle.SMALL',
 		'zoom_pan' => 'google.maps.NavigationControlStyle.ZOOM_PAN',
 		'android' => 'google.maps.NavigationControlStyle.ANDROID',
 		'default' => 'google.maps.NavigationControlStyle.DEFAULT',
-	);
-	protected static $control_maptypes = array(
-		'horizontal_bar' => 'google.maps.MapTypeControlStyle.HORIZONTAL_BAR',
-		'dropdown_menu' => 'google.maps.MapTypeControlStyle.DROPDOWN_MENU',
-		'default' => 'google.maps.MapTypeControlStyle.DEFAULT',
 	);
 	protected static $control_positions = array(
 		'top' => 'google.maps.ControlPosition.TOP',
@@ -56,11 +52,19 @@ class Kohana_Gmap
 	public function __construct(array $options = array())
 	{
 		$this->_config = Kohana::config('gmap');
-		$this->_options = Arr::extract(Arr::merge($this->_options, $options), array_keys($this->_options));
+		$available_keys = $this->_options;
+		$this->_options = array();
 		
-		$this->set_pos($this->_options['lat'], $this->_options['lng']);
-		$this->set_sensor((isset($this->_options['sensor'])) ? $this->_options['sensor'] : $this->_config->default_sensor);
-		$this->set_gmap_size($this->_options['gmap_size_x'], $this->_options['gmap_size_y']);
+		// Check if each available key is set. Using Arr::extract filled everything up with NULL.
+		foreach ($available_keys as $key)
+		{
+			if (isset($options[$key]))
+			{
+				$this->_options[$key] = $options[$key];
+			} // if
+		} // foreach
+		
+		unset($available_keys);
 	} // function
 	
 	/**
@@ -109,191 +113,46 @@ class Kohana_Gmap
 	} // function
 
 	/**
-	 * Get the controls for your gmap.
-	 * 
-	 * @return array
-	 */
-	public function get_gmap_controls_for_view()
-	{
-		return array(
-			'maptype' => $this->get_gmap_controls_maptype_for_view(),
-			'navigation' => $this->get_gmap_controls_navigation_for_view(),
-//			'scale' => $this->get_gmap_controls_scale_for_view(),
-		);
-	} // function
-
-	/**
-	 * Get the maptype controls for your gmap.
-	 * 
-	 * @return array
-	 */
-	public function get_gmap_controls_maptype_for_view()
-	{
-		$return = array();
-		
-		if ($this->_options['gmap_controls']['maptype'] === NULL)
-		{
-			if (is_array($this->_config->default_gmap_controls['maptype']))
-			{
-				if (isset($this->_config->default_gmap_controls['maptype']['style']))
-				{
-					$return['style'] = $this->_config->default_gmap_controls['maptype']['style'];
-				} // if
-				
-				if (isset($this->_config->default_gmap_controls['maptype']['position']))
-				{
-					$return['position'] = $this->_config->default_gmap_controls['maptype']['position'];
-				} // if
-			}
-			elseif (is_bool($this->_config->default_gmap_controls['maptype']))
-			{
-				$return = $this->_config->default_gmap_controls['maptype'];
-			} // if
-		}
-		else
-		{
-			$return = $this->_options['gmap_controls']['maptype'];
-		} // if
-		
-		$return = array(
-			'style' => (isset($this->_options['gmap_controls']['maptype']['style']))
-				? Gmap::$control_maptypes[$this->_options['gmap_controls']['maptype']['style']]
-				: NULL,
-			'position' => (isset($this->_options['gmap_controls']['maptype']['position']))
-				? Gmap::$control_positions[$this->_options['gmap_controls']['maptype']['position']]
-				: NULL,
-		);
-		
-		return $return;
-	} // function
-
-	/**
-	 * Get the navigation controls for your gmap.
-	 * 
-	 * @return array
-	 */
-	public function get_gmap_controls_navigation_for_view()
-	{
-		$return = array();
-		
-		if ($this->_options['gmap_controls']['navigation'] === NULL)
-		{
-			if (is_array($this->_config->default_gmap_controls['navigation']))
-			{
-				if (isset($this->_config->default_gmap_controls['navigation']['style']))
-				{
-					$return['style'] = $this->_config->default_gmap_controls['navigation']['style'];
-				} // if
-				
-				if (isset($this->_config->default_gmap_controls['navigation']['position']))
-				{
-					$return['position'] = $this->_config->default_gmap_controls['navigation']['position'];
-				} // if
-			}
-			elseif (is_bool($this->_config->default_gmap_controls['navigation']))
-			{
-				$return = $this->_config->default_gmap_controls['navigation'];
-			} // if
-		}
-		else
-		{
-			$return = $this->_options['gmap_controls']['navigation'];
-		} // if
-		
-		$return = array(
-			'style' => (isset($this->_options['gmap_controls']['navigation']['style']))
-				? Gmap::$control_navigation[$this->_options['gmap_controls']['navigation']['style']]
-				: NULL,
-			'position' => (isset($this->_options['gmap_controls']['navigation']['position']))
-				? Gmap::$control_positions[$this->_options['gmap_controls']['navigation']['position']]
-				: NULL,
-		);
-		
-		return $return;
-	} // function
-	
-	/**
 	 * Renders the google-map template.
 	 * 
+	 * @param string $view Defines a view for rendering.
 	 * @return string
 	 */
 	public function render($view = '')
 	{
 		$temp = array();
+		
 		foreach ((Array) $this->_config as $key => $value)
 		{
 			$temp[str_replace('default_', '', $key)] = $value;
 		} // foreach
 		
+		// Override the config-defaults with your setted options.
 		$this->_options = Arr::merge($temp, $this->_options);
 		unset($temp);
 		
-		if ($this->_options['maptype'] === NULL)
-		{
-			$this->_options['maptype'] = Gmap::$maptypes[$this->_config->default_maptype];
-		} // if
+		// Set the map-type.
+		$this->set_maptype($this->_options['maptype']);
 		
-		if ($this->_options['lat'] === NULL)
-		{
-			$this->_options['lat'] = $this->_config->default_lat;
-		} // if
+		// Set the latitude.
+		$this->set_pos($this->_options['lat'], NULL);
 		
-		if ($this->_options['lng'] === NULL)
-		{
-			$this->_options['lng'] = $this->_config->default_lng;
-		} // if
+		// Set the longitude.
+		$this->set_pos(NULL, $this->_options['lng']);
 		
-		if ($this->_options['gmap_size_x'] === NULL)
-		{
-			$this->_options['gmap_size_x'] = $this->_config->default_gmap_size_x;
-		} // if
+		// Set the Google Map size.
+		$this->set_gmap_size($this->_options['gmap_size_x'], $this->_options['gmap_size_y']);
 		
-		if ($this->_options['gmap_size_y'] === NULL)
-		{
-			$this->_options['gmap_size_y'] = $this->_config->default_gmap_size_y;
-		} // if
+		// Set the styles for the Google Map controls.
+		$this->_options['gmap_controls']['maptype']['style'] = Gmap::validate_control_maptype($this->_options['gmap_controls']['maptype']['style']);
+		$this->_options['gmap_controls']['navigation']['style'] = Gmap::validate_control_navigation($this->_options['gmap_controls']['navigation']['style']);
 		
-		$this->_options['gmap_controls'] = $this->get_gmap_controls_for_view();
-
-//		if ($this->_options['gmap_controls']['navigation'] === NULL)
-//		{
-//			if (is_array($this->_config->default_gmap_controls['navigation']))
-//			{
-//				if (isset($this->_config->default_gmap_controls['navigation']['style']))
-//				{
-//					$this->_options['gmap_controls']['navigation']['style'] = Gmap::$control_navigation[$this->_config->default_gmap_controls['navigation']['style']];
-//				} // if
-//				
-//				if (isset($this->_config->default_gmap_controls['navigation']['position']))
-//				{
-//					$this->_options['gmap_controls']['navigation']['position'] = Gmap::$control_navigation[$this->_config->default_gmap_controls['navigation']['position']];
-//				} // if
-//			}
-//			elseif (is_bool($this->_config->default_gmap_controls['navigation']))
-//			{
-//				$this->_options['gmap_controls']['navigation'] = $this->_config->default_gmap_controls['navigation'];
-//			} // if
-//		} // if
-//		
-//		if ($this->_options['gmap_controls']['scale'] === NULL)
-//		{
-//			if (is_array($this->_config->default_gmap_controls['scale']))
-//			{
-//				if ($this->_config->default_gmap_controls['scale']['position'] === NULL)
-//				{
-//					$this->_config->default_gmap_controls['scale'] = TRUE;
-//				}
-//				else
-//				{
-//					$this->_options['gmap_controls']['scale']['position'] = Gmap::$control_positions[$this->_config->default_gmap_controls['scale']['position']];
-//				} // if
-//			}
-//			elseif (is_bool($this->_config->default_gmap_controls['scale']))
-//			{
-//				$this->_options['gmap_controls']['scale'] = $this->_config->default_gmap_controls['scale'];
-//			} // if
-//		} // if
+		// Set the positions for the Google Map controls.
+		$this->_options['gmap_controls']['maptype']['position'] = Gmap::validate_control_position($this->_options['gmap_controls']['maptype']['position']);
+		$this->_options['gmap_controls']['navigation']['position'] = Gmap::validate_control_position($this->_options['gmap_controls']['navigation']['position']);
+		$this->_options['gmap_controls']['scale']['position'] = Gmap::validate_control_position($this->_options['gmap_controls']['scale']['position']);
 		
+		// If we set the view parameter in this method, use it!
 		if (! empty($view))
 		{
 			$this->_options['view'] = $view;
@@ -303,10 +162,12 @@ class Kohana_Gmap
 			$this->_options['view'] = $this->_config->default_view;
 		} // if
 		
+		// Bind the necessary variables.
 		$this->view = View::factory($this->_options['view'])
 			->bind('options', $this->_options)
 			->bind('marker', $this->marker);
-		
+
+		// Render the view. 
 		return $this->view->render();
 	} // function
 
@@ -318,7 +179,7 @@ class Kohana_Gmap
 	 * @param array $options Set the options for the gmap-controls here.
 	 * @return Gmap
 	 */
-	public function set_gmap_controls($options)
+	public function set_gmap_controls(array $options)
 	{
 		if (isset($options['maptype']))
 		{
@@ -342,28 +203,24 @@ class Kohana_Gmap
 	 * Set the maptype controls for your gmap.
 	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
 	 * 
-	 * @param mixed $options Set the options for the controls here.
+	 * @param array $options Set the options for the controls here.
 	 * @return Gmap
 	 */
-	public function set_gmap_controls_maptype($options)
+	public function set_gmap_controls_maptype(array $options)
 	{
-		if ($options === FALSE)
+		if (isset($options['display']))
 		{
-			$this->_options['gmap_controls']['maptype'] = FALSE;
-		}
-		elseif (is_array($options))
+			$this->_options['gmap_controls']['maptype']['display'] = (Bool) $options['display'];
+		} // if
+		
+		if (isset($options['style']))
 		{
-			if (isset($options['style']))
-			{
-				Gmap::validate_control_maptype($options['style']);
-				$this->_options['gmap_controls']['maptype']['style'] = $options['style'];
-			} // if
-			
-			if (isset($options['position']))
-			{
-				Gmap::validate_control_position($options['position']);
-				$this->_options['gmap_controls']['maptype']['position'] = $options['position'];
-			} // if
+			$this->_options['gmap_controls']['maptype']['style'] = Gmap::validate_control_maptype($options['style']);
+		} // if
+		
+		if (isset($options['position']))
+		{
+			$this->_options['gmap_controls']['maptype']['position'] = Gmap::validate_control_position($options['position']);
 		} // if
 		
 		return $this;
@@ -373,28 +230,24 @@ class Kohana_Gmap
 	 * Set the navigation controls for your gmap.
 	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
 	 * 
-	 * @param mixed $options Set the options for the controls here.
+	 * @param array $options Set the options for the controls here.
 	 * @return Gmap
 	 */
-	public function set_gmap_controls_navigation($options)
+	public function set_gmap_controls_navigation(array $options)
 	{
-		if ($options === FALSE)
+		if (isset($options['display']))
 		{
-			$this->_options['gmap_controls']['navigation'] = FALSE;
-		}
-		elseif (is_array($options))
+			$this->_options['gmap_controls']['navigation']['display'] = (Bool) $options['display'];
+		} // if
+		
+		if (isset($options['style']))
 		{
-			if (isset($options['style']))
-			{
-				Gmap::validate_control_navigation($options['style']);
-				$this->_options['gmap_controls']['navigation']['style'] = $options['style'];
-			} // if
-			
-			if (isset($options['position']))
-			{
-				Gmap::validate_control_position($options['position']);
-				$this->_options['gmap_controls']['navigation']['position'] = $options['position'];
-			} // if
+			$this->_options['gmap_controls']['navigation']['style'] = Gmap::validate_control_navigation($options['style']);
+		} // if
+		
+		if (isset($options['position']))
+		{
+			$this->_options['gmap_controls']['navigation']['position'] = Gmap::validate_control_position($options['position']);
 		} // if
 		
 		return $this;
@@ -404,22 +257,19 @@ class Kohana_Gmap
 	 * Set the scale controls for your gmap.
 	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
 	 * 
-	 * @param mixed $options Set the options for the controls here.
+	 * @param array $options Set the options for the controls here.
 	 * @return Gmap
 	 */
-	public function set_gmap_controls_scale($options)
+	public function set_gmap_controls_scale(array $options)
 	{
-		if ($options === FALSE)
+		if (isset($options['display']))
 		{
-			$this->_options['gmap_controls']['scale'] = FALSE;
-		}
-		elseif (is_array($options))
+			$this->_options['gmap_controls']['scale']['display'] = (Bool) $options['display'];
+		} // if
+		
+		if (isset($options['position']))
 		{
-			if (isset($options['position']))
-			{
-				Gmap::validate_control_position($options['position']);
-				$this->_options['gmap_controls']['scale']['position'] = $options['position'];
-			} // if
+			$this->_options['gmap_controls']['scale']['position'] = Gmap::validate_control_position($options['position']);
 		} // if
 		
 		return $this;
@@ -456,8 +306,7 @@ class Kohana_Gmap
 	 */
 	public function set_maptype($maptype)
 	{
-		Gmap::validate_maptype($maptype);
-		$this->_options['maptype'] = Gmap::$maptypes[$maptype];
+		$this->_options['maptype'] = Gmap::validate_maptype($maptype);
 		
 		return $this;
 	} // function
@@ -473,14 +322,12 @@ class Kohana_Gmap
 	{
 		if ($lat != NULL)
 		{
-			Gmap::validate_latitude($lat);
-			$this->_options['lat'] = $lat;
+			$this->_options['lat'] = Gmap::validate_latitude($lat);
 		} // if
 		
 		if ($lng != NULL)
 		{
-			Gmap::validate_longitude($lng);
-			$this->_options['lng'] = $lng;
+			$this->_options['lng'] = Gmap::validate_longitude($lng);
 		} // if
 		
 		return $this;
@@ -522,14 +369,23 @@ class Kohana_Gmap
 	 * Validate, if the given maptype-control is valid.
 	 * 
 	 * @param float $lat
-	 * @return boolean
+	 * @return string
 	 */
 	protected static function validate_control_maptype($maptype)
 	{
-		if (! array_key_exists($maptype, Gmap::$control_maptypes))
+		if (! array_key_exists($maptype, Gmap::$control_maptypes) AND ! in_array($maptype, Gmap::$control_maptypes))
 		{
 			throw new Kohana_Exception('Given Map-Type ":maptype" control is not valid.',
 				array(':maptype' => $maptype));
+		} // if
+				
+		if (array_key_exists($maptype, Gmap::$control_maptypes))
+		{ 
+			return Gmap::$control_maptypes[$maptype];
+		} // if
+		elseif (in_array($maptype, Gmap::$control_maptypes))
+		{
+			return $maptype;
 		} // if
 	} // function
 	
@@ -537,14 +393,23 @@ class Kohana_Gmap
 	 * Validate, if the given maptype-control is valid.
 	 * 
 	 * @param float $lat
-	 * @return boolean
+	 * @return string
 	 */
 	protected static function validate_control_navigation($navigation)
 	{
-		if (! array_key_exists($navigation, Gmap::$control_navigation))
+		if (! array_key_exists($navigation, Gmap::$control_navigation) AND ! in_array($navigation, Gmap::$control_navigation))
 		{
 			throw new Kohana_Exception('Given Navigation-control ":navigation" is not valid.',
 				array(':navigation' => $navigation));
+		} // if
+				
+		if (array_key_exists($navigation, Gmap::$control_navigation))
+		{ 
+			return Gmap::$control_navigation[$navigation];
+		} // if
+		elseif (in_array($navigation, Gmap::$control_navigation))
+		{
+			return $navigation;
 		} // if
 	} // function
 	
@@ -552,13 +417,28 @@ class Kohana_Gmap
 	 * Validate, if the given position is supported.
 	 * 
 	 * @param string $position
+	 * @return string
 	 */
 	protected static function validate_control_position($position)
 	{
-		if (! array_key_exists($position, Gmap::$control_positions))
+		if ($position === NULL)
+		{
+			return NULL;
+		} // if
+		
+		if (! array_key_exists($position, Gmap::$control_positions) AND ! in_array($position, Gmap::$control_positions))
 		{
 			throw new Kohana_Exception('":position" is no supported position.',
 				array(':position' => $position));
+		} // if
+				
+		if (array_key_exists($position, Gmap::$control_positions))
+		{ 
+			return Gmap::$control_positions[$position];
+		} // if
+		elseif (in_array($position, Gmap::$control_positions))
+		{
+			return $position;
 		} // if
 	} // function
 	
@@ -566,7 +446,7 @@ class Kohana_Gmap
 	 * Validate, if the latitude is in bounds.
 	 * 
 	 * @param float $lat
-	 * @return boolean
+	 * @return float
 	 */
 	protected static function validate_latitude($lat)
 	{
@@ -575,13 +455,15 @@ class Kohana_Gmap
 			throw new Kohana_Exception('Latitude has to lie between -180.0 and 180.0! Set to ":lat"',
 				array(':lat' => $lat));
 		} // if
+		
+		return $lat;
 	} // function
 	
 	/**
 	 * Validate, if the longitude is in bounds.
 	 * 
 	 * @param float $lng
-	 * @return boolean
+	 * @return float
 	 */
 	protected static function validate_longitude($lng)
 	{
@@ -590,19 +472,31 @@ class Kohana_Gmap
 			throw new Kohana_Exception('Longitude has to lie between -90.0 and 90.0! Set to ":lng"',
 				array(':lng' => $lng));
 		} // if
+		
+		return $lng;
 	} // function
 	
 	/**
 	 * Validate, if the given map-type is supported.
 	 * 
 	 * @param string $maptype
+	 * @return string
 	 */
 	protected static function validate_maptype($maptype)
 	{
-		if (! array_key_exists($maptype, Gmap::$maptypes))
+		if (! array_key_exists($maptype, Gmap::$maptypes) AND ! in_array($maptype, Gmap::$maptypes))
 		{
 			throw new Kohana_Exception('":maptype" is no supported map-type.',
 				array(':maptype' => $maptype));
+		} // if
+		
+		if (array_key_exists($maptype, Gmap::$maptypes))
+		{ 
+			return Gmap::$maptypes[$maptype];
+		} // if
+		elseif (in_array($maptype, Gmap::$maptypes))
+		{
+			return $maptype;
 		} // if
 	} // function
 } // class
