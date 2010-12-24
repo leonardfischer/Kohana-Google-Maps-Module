@@ -72,5 +72,4 @@ window.onload = (function(){
 	gmaps_mod.initialize();
 });
 </script>
-<pre><?php var_dump($options); ?></pre>
 <div id="map_canvas" style="width:<?php echo $options['gmap_size_x']; ?>; height:<?php echo $options['gmap_size_y']; ?>"></div>
