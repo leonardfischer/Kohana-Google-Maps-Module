@@ -28,16 +28,13 @@ The usage of this module is as easy as it could be! Simply activate the module i
 
 Then you'll just echo an instance of the gmap class in your action... For example:
 
-```php
     public function action_index()
     {
         $this->template->map = new Gmap();
     } // function
-```
 
 This is a more advanced example with usage of various methods...
 
-```php
     public function action_index()
     {
        $map = new Gmap();
@@ -52,6 +49,8 @@ This is a more advanced example with usage of various methods...
        // Will render the "gmap_view_2" instead of the default "gmap" view.
        $this->template->map = $map->render('gmap_view_2');
     }
-```
 
 Yes, it's that easy ;)
+
+## More!
+For more information look up the wiki!
