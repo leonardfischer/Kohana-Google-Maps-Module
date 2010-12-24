@@ -4,38 +4,43 @@ var gmaps_mod = gmaps_mod || {};
 
 gmaps_mod.initialize = function() {
 	var options = {
-		<?php if (is_bool($options['gmap_controls']['maptype'])): ?>
-			mapTypeControl: <?php echo $options['gmap_controls']['maptype']; ?>,
-		<?php elseif(is_array($options['gmap_controls']['maptype'])): ?>
-			mapTypeControl: true,
-			mapTypeControlOptions: {
-				<?php if(isset($options['gmap_controls']['maptype']['style'])): ?>
-					style: <?php echo $options['gmap_controls']['maptype']['style']; ?>,
-				<?php endif; ?>
-				
-				<?php if(isset($options['gmap_controls']['maptype']['position'])): ?>
-					position: <?php echo $options['gmap_controls']['maptype']['position']; ?>,
-				<?php endif; ?>
-			},
-		<?php endif; ?>
-		
-		<?php if (is_bool($options['gmap_controls']['navigation'])): ?>
-			navigationControl: <?php echo $options['gmap_controls']['navigation']; ?>,
-		<?php elseif(is_array($options['gmap_controls']['navigation'])): ?>
-			navigationControl: true,
-			navigationControlOptions: {
-				<?php if(isset($options['gmap_controls']['navigation']['style'])): ?>
-					style: <?php echo $options['gmap_controls']['navigation']['style']; ?>,
-				<?php endif; ?>
-				
-				<?php if(isset($options['gmap_controls']['navigation']['position'])): ?>
-					position: <?php echo $options['gmap_controls']['navigation']['position']; ?>,
-				<?php endif; ?>
-			},
-		<?php endif; ?>
 		zoom: <?php echo $options['zoom']; ?>,
 		center: new google.maps.LatLng(<?php echo str_replace(',', '.', $options['lat']); ?>, <?php echo str_replace(',', '.', $options['lng']); ?>),
-		mapTypeId: <?php echo $options['maptype']; ?>
+		mapTypeId: <?php echo $options['maptype']; ?>,
+		<?php if ($options['gmap_controls']['maptype']['display']): ?>
+		mapTypeControl: true,
+		mapTypeControlOptions: {
+			style: <?php echo $options['gmap_controls']['maptype']['style']; ?>,
+			<?php if ($options['gmap_controls']['maptype']['position'] !== NULL): ?>
+			position: <?php echo $options['gmap_controls']['maptype']['position']; ?>,
+			<?php endif; ?>
+		},
+		<?php else: ?>
+		mapTypeControl: false,
+		<?php endif; ?>
+		
+		<?php if ($options['gmap_controls']['navigation']['display']): ?>
+		navigationControl: true,
+		navigationControlOptions: {
+			style: <?php echo $options['gmap_controls']['navigation']['style']; ?>,
+			<?php if ($options['gmap_controls']['navigation']['position'] !== NULL): ?>
+			position: <?php echo $options['gmap_controls']['navigation']['position']; ?>,
+			<?php endif; ?>
+		},
+		<?php else: ?>
+		navigationControl: false,
+		<?php endif; ?>
+		
+		<?php if ($options['gmap_controls']['scale']['display']): ?>
+		scaleControl: true,
+		<?php if ($options['gmap_controls']['scale']['position'] !== NULL): ?>
+		scaleControlOptions: {
+			position: <?php echo $options['gmap_controls']['scale']['position']; ?>,
+		},
+		<?php endif; ?>
+		<?php else: ?>
+		scaleControl: false,
+		<?php endif; ?>
 	};
 	
 	var map = new google.maps.Map(document.getElementById("map_canvas"), options);
@@ -67,4 +72,5 @@ window.onload = (function(){
 	gmaps_mod.initialize();
 });
 </script>
+<pre><?php var_dump($options); ?></pre>
 <div id="map_canvas" style="width:<?php echo $options['gmap_size_x']; ?>; height:<?php echo $options['gmap_size_y']; ?>"></div>
