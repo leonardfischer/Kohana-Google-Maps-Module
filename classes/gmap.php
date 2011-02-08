@@ -7,4 +7,4 @@
  * @copyright  (c) 2011 Leonard Fischer
  * @version    1.1
  */
-class Gmap extends Kohana_Gmap {}
+class Gmap extends Gmap_Core {}
