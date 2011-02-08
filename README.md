@@ -1,22 +1,22 @@
-# Kohana-Google Maps Module
+# Kohana Google Maps Module V1.1
 With this module you can easily add a "google map" to your Kohana installation
 
-The Google Map Module will make use of the following modules:
-
-* None
+The Google Map module has NO dependency to other modules!
 
 ## Features
 
 * Display a Google-Map by just echo'ing an instance of the "Gmap" class
 * Setting several map-types (road, satellite, hybrid and terrain)
 * Setting sensor-parameter for mobile devices
-* Adding new markers to the map
+* Adding markers to the map (including custom icon and Google Maps popups)
+* Adding polylines to the map
 
 ## Features to come
 The following features shall be implemented during development:
 
+* Adding polygons
 * Adding your own control-elements to the map
-* Cleaning up the gmap-view
+* Cleaning up the gmap-view (Maybe stuffing javascript parts in several sub-views?)
 
 ## Usage
 The usage of this module is as easy as it could be! Simply activate the module in your bootstrap.php
@@ -30,19 +30,19 @@ Then you'll just echo an instance of the gmap class in your action... For exampl
 
     public function action_index()
     {
-        $this->template->map = new Gmap();
+        $this->template->map = Gmap::factory();
     } // function
 
 This is a more advanced example with usage of various methods...
 
     public function action_index()
     {
-       $map = new Gmap();
-       $map->add_marker('Marker A', 51.15, 6.83)
+       $map = Gmap::factory()
+           ->add_marker('Marker A', 51.15, 6.83)
            ->add_marker('Marker B', 51.15, 6.93,
-               array( // Marker with Content and custom icon.
+               array(
                    'content' => '<p>Put HTML here. "Quotes" and \'singlequotes\'</p>',
-                   'icon' => '/assets/images/red_pin.png'
+                   'icon' => '/path/to/your.icon'
                ))
            ->set_gmap_size('100%', 500); // Will output "width: 100%; height: 500px"
        

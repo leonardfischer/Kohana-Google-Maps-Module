@@ -10,18 +10,21 @@ return array (
 	// Default zoom-level.
 	'default_zoom' => 12,
 
-	 // Default "sensor" setting - Used for mobile devices.
+	// Default "sensor" setting - Used for mobile devices.
 	'default_sensor' => FALSE,
 
 	// Default map-type.
 	'default_maptype' => 'road',
 
-	// View
+	// The instance will be set in the render method to a random string (if this value is empty).
+	'instance' => '',
+
+	// Default view-options.
 	'default_view' => 'gmap',
 	'default_gmap_size_x' => '100%',
 	'default_gmap_size_y' => '100%',
 
-	// Google Maps controls
+	// Default Google Maps controls.
 	'default_gmap_controls' => array(
 		'maptype' => array(
 			'display' => TRUE,
@@ -37,5 +40,21 @@ return array (
 			'display' => TRUE,
 			'position' => NULL,
 		),
+	),
+	
+	// Default options for polylines.
+	'default_polyline_options' => array(
+		'strokeColor' => '#000',
+		'strokeOpacity' => 1,
+		'strokeWeight' => 3,
+	),
+	
+	// Default options for polygons.
+	'default_polygon_options' => array(
+		'strokeColor' => '#000',
+		'strokeOpacity' => 1,
+		'strokeWeight' => 3,
+		'fillColor' => '#000',
+		'fillOpacity' => .5,
 	),
 );
