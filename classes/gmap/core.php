@@ -5,7 +5,7 @@
  * @package    gmap
  * @author     Leonard Fischer <leonard.fischer@sn4ke.de>
  * @copyright  (c) 2011 Leonard Fischer
- * @version    1.1
+ * @version    1.3
  */
 class Gmap_Core
 {
@@ -342,7 +342,7 @@ class Gmap_Core
 	/**
 	 * Set some controls for your gmap.
 	 * You can specify how to display the map-type and navigation control.
-	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
+	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki .
 	 *
 	 * @param array $options Set the options for the gmap-controls here.
 	 * @return Gmap
@@ -369,7 +369,7 @@ class Gmap_Core
 
 	/**
 	 * Set the maptype controls for your gmap.
-	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
+	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki .
 	 *
 	 * @param array $options Set the options for the controls here.
 	 * @return Gmap
@@ -396,7 +396,7 @@ class Gmap_Core
 
 	/**
 	 * Set the navigation controls for your gmap.
-	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki
+	 * For more information visit https://github.com/solidsnake/Kohana-Google-Maps-Module/wiki .
 	 *
 	 * @param array $options Set the options for the controls here.
 	 * @return Gmap
@@ -464,8 +464,8 @@ class Gmap_Core
 	 * You may set a CSS attribute like for example "500px", "50%" or "10em".
 	 * If you just set an integer, "px" will be used.
 	 *
-	 * @param mixed $x May be a CSS attribute ("500px", "50%", "10em") or an int
-	 * @param mixed $y May be a CSS attribute ("500px", "50%", "10em") or an int
+	 * @param mixed $x May be a CSS attribute ("500px", "50%", "10em") or an int.
+	 * @param mixed $y May be a CSS attribute ("500px", "50%", "10em") or an int.
 	 * @return Gmap
 	 */
 	public function set_gmap_size($x = NULL, $y = NULL)
@@ -596,7 +596,7 @@ class Gmap_Core
 		if (array_key_exists($maptype, Gmap::$control_maptypes))
 		{
 			return Gmap::$control_maptypes[$maptype];
-		} // if
+		}
 		elseif (in_array($maptype, Gmap::$control_maptypes))
 		{
 			return $maptype;
@@ -622,7 +622,7 @@ class Gmap_Core
 		if (array_key_exists($navigation, Gmap::$control_navigation))
 		{
 			return Gmap::$control_navigation[$navigation];
-		} // if
+		}
 		elseif (in_array($navigation, Gmap::$control_navigation))
 		{
 			return $navigation;
@@ -653,7 +653,7 @@ class Gmap_Core
 		if (array_key_exists($position, Gmap::$control_positions))
 		{
 			return Gmap::$control_positions[$position];
-		} // if
+		}
 		elseif (in_array($position, Gmap::$control_positions))
 		{
 			return $position;
@@ -713,7 +713,7 @@ class Gmap_Core
 		if (array_key_exists($maptype, Gmap::$maptypes))
 		{
 			return Gmap::$maptypes[$maptype];
-		} // if
+		}
 		elseif (in_array($maptype, Gmap::$maptypes))
 		{
 			return $maptype;

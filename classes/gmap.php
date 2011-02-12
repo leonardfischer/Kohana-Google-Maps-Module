@@ -5,6 +5,6 @@
  * @package    gmap
  * @author     Leonard Fischer <leonard.fischer@sn4ke.de>
  * @copyright  (c) 2011 Leonard Fischer
- * @version    1.1
+ * @version    1.3
  */
 class Gmap extends Gmap_Core {}
