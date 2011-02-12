@@ -1,5 +1,5 @@
-# Kohana Google Maps Module V1.1
-With this module you can easily add a "google map" to your Kohana installation
+# Kohana Google Maps Module V1.3
+With this module you can easily add a Google Map to your Kohana installation!
 
 The Google Map module has NO dependency to other modules!
 
@@ -7,7 +7,7 @@ The Google Map module has NO dependency to other modules!
 
 * Display a Google-Map by just echo'ing an instance of the "Gmap" class
 * Setting several map-types (road, satellite, hybrid and terrain)
-* Setting sensor-parameter for mobile devices
+* Setting sensor-parameter (for mobile devices)
 * Adding markers to the map (including custom icon and Google Maps popups)
 * Adding polylines to the map
 * Adding polygons to the map
@@ -16,11 +16,14 @@ The Google Map module has NO dependency to other modules!
 ## Features to come
 The following features shall be implemented during development:
 
-* Cleaning up the gmap-view (Maybe stuffing javascript parts in several sub-views?)
+* Cleaning up the Google Map-view (Maybe moving the javascript to a sub-views?)
 
 ## Usage
 The usage of this module is as easy as it could be! Simply activate the module in your bootstrap.php
 
+	/**
+	 * Enable modules. Modules are referenced by a relative or absolute path.
+	 */
 	Kohana::modules(array(
 		// ...
 		'gmap'       => MODPATH.'gmap',       // A simple google-maps module
@@ -33,11 +36,11 @@ Then you'll just echo an instance of the gmap class in your action... For exampl
 		$this->template->map = Gmap::factory();
 	} // function
 
-This is a more advanced example with usage of various methods...
+This is a more advanced example with usage of various options...
 
 	public function action_index()
 	{
-		$map = Gmap::factory(
+		$gmap = Gmap::factory(
 				array(
 					'zoom' => 4,
 					'sensor' => FALSE,
@@ -50,9 +53,15 @@ This is a more advanced example with usage of various methods...
 				))
 			->set_gmap_size('100%', 500); // Will output "width: 100%; height: 500px"
 
-		// Will render a fictional "gmap_view_2" view instead of the default "gmap" view.
-		$this->template->map = $map->render('gmap_view_2');
-	}
+		// This will render the Google Map.
+		$this->template->map = $gmap;
+
+		// Or...
+		$this->template->map = $gmap->render();
+
+		// Or rendering a own Google Map view.
+		$this->template->map = $gmap->render('gmap_view_2');
+	} // function
 
 Yes, it's that easy ;)
 
