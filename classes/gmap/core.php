@@ -702,7 +702,7 @@ class Gmap_Core
 	 */
 	protected static function validate_maptype($maptype)
 	{
-		$maptype = strtolower(trim($maptype));
+		$maptype = trim($maptype);
 
 		if (! array_key_exists($maptype, Gmap::$maptypes) AND ! in_array($maptype, Gmap::$maptypes))
 		{
