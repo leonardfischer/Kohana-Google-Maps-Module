@@ -668,10 +668,11 @@ class Gmap_Core
 	 */
 	protected static function validate_latitude($lat)
 	{
-		if ($lat > 180 OR $lat < -180)
+
+		if ($lat > 90 OR $lat < -90)
 		{
-			throw new Kohana_Exception('Latitude has to lie between -180.0 and 180.0! Set to ":lat"',
-				array(':lat' => $lat));
+			throw new Kohana_Exception('Latitude has to lie between -90.0 and 90.0! Set to ":lat"',
+				array(':lng' => $lat));
 		} // if
 
 		return $lat;
@@ -685,9 +686,9 @@ class Gmap_Core
 	 */
 	protected static function validate_longitude($lng)
 	{
-		if ($lng > 90 OR $lng < -90)
+		if ($lng > 180 OR $lng < -180)
 		{
-			throw new Kohana_Exception('Longitude has to lie between -90.0 and 90.0! Set to ":lng"',
+			throw new Kohana_Exception('Longitude has to lie between -180.0 and 180.0! Set to ":lng"',
 				array(':lng' => $lng));
 		} // if
 
